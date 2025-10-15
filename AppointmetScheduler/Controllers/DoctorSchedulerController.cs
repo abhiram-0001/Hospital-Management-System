@@ -55,7 +55,7 @@ namespace AppointmetScheduler.Controllers
         {
             var schedule = await _context.DoctorSchedules.FindAsync(scheduleId);
             if (scheduleId == null) return NotFound();
-            if(CurrentUserId!=schedule.ScheduleId) return Forbid();
+            if(CurrentUserId!=schedule.DoctorId) return Forbid();
 
             schedule.AvailableDate = dto.AvailableDate;
             schedule.StartTime = dto.StartTime; 

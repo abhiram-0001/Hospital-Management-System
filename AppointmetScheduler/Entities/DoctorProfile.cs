@@ -4,7 +4,7 @@
     {
 
         public int DoctorId { get; set; }
-        public string Specialization { get; set; } = null!;
+        public string ?Specialization { get; set; } 
         public int? Experience { get; set; }
         public string? Qualifications { get; set; }
 

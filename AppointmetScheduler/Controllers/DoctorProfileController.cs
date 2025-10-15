@@ -23,7 +23,7 @@ namespace AppointmetScheduler.Controllers
                         .Select(d => new { d.Specialization, d.Qualifications, d.Experience })
                         .FirstOrDefaultAsync();
 
-            return  doc==null?NotFound(): Ok();
+            return  doc==null?NotFound(): Ok(doc);
         }
         public record UpdateDtoDoc(string? Specilization,string? Qualifications,int? Expirence);
         [HttpPut("update/{id:int}")]

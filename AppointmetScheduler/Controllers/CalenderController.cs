@@ -26,7 +26,7 @@ namespace AppointmetScheduler.Controllers
                                     id=x.AppointmentId,
                                     title="Appointment",
                                     start=TimeZoneInfo.ConvertTimeFromUtc(x.StartUtc,tz).ToString("O"),
-                                    end=TimeZoneInfo.ConvertTimeFromUtc(x.EndUtc,tz).ToString("O")
+                                    end=TimeZoneInfo.ConvertTimeFromUtc(x.EndUtc,tz).ToString("O"),
                                     status=x.Status.ToString()
                                 }).ToListAsync();
             return Ok(events);

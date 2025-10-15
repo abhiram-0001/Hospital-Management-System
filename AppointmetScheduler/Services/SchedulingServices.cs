@@ -28,6 +28,7 @@ namespace AppointmetScheduler.Services
                 
             };
             _dbContext.Appointment.Add(ap);
+            _dbContext.SaveChangesAsync();
             return ap;
             
         }
@@ -42,14 +43,18 @@ namespace AppointmetScheduler.Services
             var localend = TimeZoneInfo.ConvertTimeFromUtc(endUtc, tz);
             var date = DateOnly.FromDateTime(startUtc);
 
+            var startLocalTime = TimeOnly.FromDateTime(localstart);
+            var endLocalTime = TimeOnly.FromDateTime(localend);
+
             var withinwindow = await _dbContext.DoctorSchedules
                                     .Where(s => s.DoctorId == req.DoctorId && s.IsAvailable && s.AvailableDate == date)
-                                    .AnyAsync(s => localstart.TimeOfDay >= s.StartTime.Value.ToTimeSpan()&& localend.TimeOfDay <= s.EndTime.Value.ToTimeSpan());
+                                    .AnyAsync(s => startLocalTime >= s.StartTime&& endLocalTime <= s.EndTime);
 
             if (!withinwindow) return false;
-            var overlap = await _dbContext.Appointment.AnyAsync(a=>a.DoctorId==req.DoctorId&&a.Status!=Enums.AppointmentStatus.Cancelled&&startUtc>=a.StartUtc&&endUtc<=a.EndUtc);
+            var overlap = await _dbContext.Appointment
+                                .AnyAsync(a=>a.DoctorId==req.DoctorId&&a.Status!=Enums.AppointmentStatus.Cancelled&&startUtc>=a.StartUtc&&endUtc<=a.EndUtc);
+
             return !overlap;
-            
         }
     }
 }

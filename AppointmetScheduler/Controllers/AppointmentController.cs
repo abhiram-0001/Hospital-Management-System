@@ -24,7 +24,7 @@ namespace AppointmetScheduler.Controllers
         {
             if (CurrentUserRole == "Patient" && CurrentUserId != req.PaitientId) return Forbid();
             var appt = await _schedulingServices.BookAsync(req);
-            if (appt == null) return NotFound();
+            if (appt == null) return NotFound("NO SLOTS");
             return Ok(appt);
         }
         [HttpGet("getall")]
