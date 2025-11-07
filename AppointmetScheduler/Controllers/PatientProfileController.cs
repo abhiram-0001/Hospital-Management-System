@@ -26,13 +26,20 @@ namespace AppointmetScheduler.Controllers
                     .Select(x => new { x.PaitentId, x.Adress, x.BloodGroup, x.EmergencyContact }).FirstOrDefaultAsync();
             return p == null ? NotFound() : Ok(p);
         }
-        public record UpdateDto(string? Adress,string? BloodGroup,string? EmergencyContact);
+        public record UpdateDto(string? PhoneNumber, string? Gender, DateOnly? DOB, string? Adress,string? BloodGroup,string? EmergencyContact);
         [HttpPut("update/{id:int}")]
         public async Task<ActionResult>Update(int id, [FromBody] UpdateDto dto)
         {
             if (id != CurrentUserId) return Forbid();
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == id);
             var paitient = await _context.PaitentProfiles.FirstOrDefaultAsync(x=>x.PaitentId==id);
+
+            if (user == null) return NotFound();
             if (paitient == null) return NotFound();
+
+            user.PhoneNumber = dto.PhoneNumber;
+            user.Gender = dto.Gender;
+            user.DOB = dto.DOB;
             paitient.Adress = dto.Adress;
             paitient.BloodGroup= dto.BloodGroup;
             paitient.EmergencyContact = dto.EmergencyContact;

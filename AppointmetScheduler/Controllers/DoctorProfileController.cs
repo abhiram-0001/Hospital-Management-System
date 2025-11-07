@@ -25,13 +25,22 @@ namespace AppointmetScheduler.Controllers
 
             return  doc==null?NotFound(): Ok(doc);
         }
-        public record UpdateDtoDoc(string? Specilization,string? Qualifications,int? Expirence);
+        public record UpdateDtoDoc(string? PhoneNumber, string? Gender, DateOnly? DOB,
+            string? Specilization,string? Qualifications,int? Expirence);
         [HttpPut("update/{id:int}")]
         public async Task<ActionResult>Update(int id, [FromBody] UpdateDtoDoc dto)
         {
             if (id != CurrentUserId) return Forbid();
+            var user=await _context.Users.FirstOrDefaultAsync(u=>u.UserId==id);
             var doc = await _context.DoctorProfiles.FindAsync(id);
+
+            if(user==null) return NotFound();
             if(doc==null) return NotFound();
+
+            user.PhoneNumber=dto.PhoneNumber;
+            user.Gender=dto.Gender;
+            user.DOB=dto.DOB;
+
             doc.Specialization = dto.Specilization;
             doc.Qualifications = dto.Qualifications;
             doc.Experience=dto.Expirence;

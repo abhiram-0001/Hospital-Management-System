@@ -8,6 +8,13 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngularApp",
+        policy => policy.WithOrigins("http://localhost:4200")
+                        .AllowAnyHeader()
+                        .AllowAnyMethod());
+});
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddDbContext<AppDbContext>(options=>
@@ -85,7 +92,7 @@ app.MapGet("/scalar", async context =>
     await context.Response.WriteAsync(html);
 });
 // ******************************************************
-
+app.UseCors("AllowAngularApp");
 app.UseAuthorization();
 
 app.MapControllerRoute(
