@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Client;
 
 namespace AppointmetScheduler.Controllers
 {
@@ -21,9 +22,23 @@ namespace AppointmetScheduler.Controllers
 
             if (id != CurrentUserId) return Forbid();
 
-            var p = await _context.PaitentProfiles
-                    .Where(x => x.PaitentId == id)
-                    .Select(x => new { x.PaitentId, x.Adress, x.BloodGroup, x.EmergencyContact }).FirstOrDefaultAsync();
+            var p = await _context.Users
+                    .Where(x => x.UserId == id)
+                    .Select(x => new { 
+                        x.FirstName,
+                        x.LastName,
+                        x.Email,
+                        x.Gender,
+                        x.DOB,
+                        x.PhoneNumber,
+                        pp=_context.PaitentProfiles.Where(p=>p.PaitentId==id)
+                                                    .Select(p=>new
+                                                    {
+                                                        p.Adress,
+                                                        p.BloodGroup,
+                                                        p.EmergencyContact
+                                                    }).FirstOrDefault()
+                    }).FirstOrDefaultAsync();
             return p == null ? NotFound() : Ok(p);
         }
         public record UpdateDto(string? PhoneNumber, string? Gender, DateOnly? DOB, string? Adress,string? BloodGroup,string? EmergencyContact);
@@ -45,6 +60,13 @@ namespace AppointmetScheduler.Controllers
             paitient.EmergencyContact = dto.EmergencyContact;
             await _context.SaveChangesAsync();
             return Ok(paitient);
+        }
+        [HttpGet("{id:int}/getalldoctors")]
+        public async Task<ActionResult> GetAlldoc(int id)
+        {
+            if(id!=CurrentUserId) return Forbid();
+            var docs = await _context.Users.Where(u => u.Role == Enums.UserRole.Doctor).ToListAsync();
+            return Ok(docs);
         }
     }
 }
