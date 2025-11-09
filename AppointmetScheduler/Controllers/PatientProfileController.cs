@@ -65,8 +65,42 @@ namespace AppointmetScheduler.Controllers
         public async Task<ActionResult> GetAlldoc(int id)
         {
             if(id!=CurrentUserId) return Forbid();
-            var docs = await _context.Users.Where(u => u.Role == Enums.UserRole.Doctor).ToListAsync();
+            var docs = await _context.Users.Where(u => u.Role == Enums.UserRole.Doctor)
+                                .Select( u=>new
+                                {
+                                    u.UserId,
+                                    u.FirstName,
+                                    u.Email,
+                                    dd=_context.DoctorProfiles.Where(d=>d.DoctorId==u.UserId)
+                                                .Select(d=>new
+                                                {
+                                                    d.Specialization,
+                                                    d.rating,
+                                                    d.Qualifications
+                                                }).FirstOrDefault()
+                                }).ToListAsync();
             return Ok(docs);
+        }
+        [HttpGet("getdoc/{docId:int}")]
+        public async Task<ActionResult> GetDocById(int docId)
+        {
+            var doc= await _context.Users.Where(u => u.UserId==docId)
+                                .Select(u => new
+                                {
+                                    u.UserId,
+                                    u.FirstName,
+                                    u.Email,
+                                    dd = _context.DoctorProfiles.Where(d => d.DoctorId == docId)
+                                                .Select(d => new
+                                                {
+                                                    d.Description,
+                                                    d.Specialization,
+                                                    d.Experience,
+                                                    d.rating,
+                                                    d.Qualifications
+                                                }).FirstOrDefault()
+                                }).FirstOrDefaultAsync();
+            return Ok(doc);
         }
     }
 }

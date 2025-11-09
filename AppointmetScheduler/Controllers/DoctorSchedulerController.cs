@@ -11,7 +11,7 @@ namespace AppointmetScheduler.Controllers
 {
     [ApiController]
     [Route("api/[Controller]")]
-    [Authorize(Roles ="Admin,Doctor")]
+    [Authorize]
     public class DoctorSchedulerController : BaseApiController
     {
         private AppDbContext _context;
@@ -22,7 +22,7 @@ namespace AppointmetScheduler.Controllers
         [HttpGet("get/{id:int}")]
         public async Task<ActionResult> Get(int id, [FromQuery]DateOnly?fromdate,DateOnly?todate)
         {
-            if (id != CurrentUserId) return Forbid();
+            if (id != CurrentUserId&&CurrentUserRole=="Doctor") return Forbid();
 
             var q = _context.DoctorSchedules.Where(ds=>ds.DoctorId==id);
             if (fromdate.HasValue) q = q.Where(s => s.AvailableDate >= fromdate);
@@ -37,7 +37,7 @@ namespace AppointmetScheduler.Controllers
         [HttpPost("{docId:int}/create")]
         public async Task<ActionResult> Create(int docId, [FromBody] docScheduleDto dto)
         {
-            if (CurrentUserId != docId) return Forbid();
+            if (CurrentUserId != docId&&CurrentUserRole=="Doctor") return Forbid();
             var schedule = new DoctorSchedule();
             schedule.AvailableDate = dto.AvailableDate;
             schedule.StartTime = dto.StartTime;

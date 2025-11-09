@@ -18,10 +18,25 @@ namespace AppointmetScheduler.Controllers
         public async Task<ActionResult> Get(int id)
         {
             if (id != CurrentUserId) return Forbid();
-            var doc = await _context.DoctorProfiles
-                        .Where(d => d.DoctorId == id)
-                        .Select(d => new { d.Specialization, d.Qualifications, d.Experience })
-                        .FirstOrDefaultAsync();
+            var doc = await _context.Users
+                    .Where(x => x.UserId == id)
+                    .Select(x => new {
+                        x.FirstName,
+                        x.LastName,
+                        x.Email,
+                        x.Gender,
+                        x.DOB,
+                        x.PhoneNumber,
+                        pp = _context.DoctorProfiles.Where(d=>d.DoctorId== id)
+                                                    .Select(d => new
+                                                    {
+                                                       d.Qualifications,
+                                                       d.Description,
+                                                       d.rating,
+                                                       d.Experience,
+                                                       d.Specialization
+                                                    }).FirstOrDefault()
+                    }).FirstOrDefaultAsync();
 
             return  doc==null?NotFound(): Ok(doc);
         }
