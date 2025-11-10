@@ -22,7 +22,7 @@ namespace AppointmetScheduler.Controllers
         [HttpPost("book")]
         public async Task<ActionResult> Book(BookRequestDto req)
         {
-            if (CurrentUserRole == "Patient" && CurrentUserId != req.PaitientId) return Forbid();
+            if (CurrentUserRole == "Patient" && CurrentUserId != req.PatientId) return Forbid();
             var appt = await _schedulingServices.BookAsync(req);
             if (appt == null) return NotFound("NO SLOTS");
             return Ok(appt);
@@ -47,7 +47,7 @@ namespace AppointmetScheduler.Controllers
             if (CurrentUserRole == "Paitent" && CurrentUserId != appt.PatientId) return Forbid();
             if (CurrentUserRole == "Doctor" && CurrentUserId != appt.DoctorId) return Forbid();
 
-            var canbook = await _schedulingServices.CanBook(new BookRequestDto { PaitientId = appt.PatientId,
+            var canbook = await _schedulingServices.CanBook(new BookRequestDto { PatientId = appt.PatientId,
                 DoctorId = appt.DoctorId, StartLocal = dto.newStartLocal, DurationMinutes = dto.DurationMinutes, TimeZoneId = dto.TimeZoneId });
             if (!canbook) return Conflict("Requested time is not available");
             var tz = TimeZoneInfo.FindSystemTimeZoneById(dto.TimeZoneId);

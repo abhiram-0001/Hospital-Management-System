@@ -2,11 +2,11 @@
 {
     public class BookRequestDto
     {
-        public int PaitientId { get; set; }
+        public int PatientId { get; set; }
         public int DoctorId { get; set; }
         public DateTime StartLocal { get; set; }
         public int DurationMinutes { get; set; }
         public string TimeZoneId { get; set; }
-        
+        public string? Notes { get; set; }
     }
 }

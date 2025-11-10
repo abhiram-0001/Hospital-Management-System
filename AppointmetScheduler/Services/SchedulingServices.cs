@@ -20,15 +20,15 @@ namespace AppointmetScheduler.Services
             if (!await CanBook(req)) return null;
             var ap = new Appointments
             {
-                PatientId=req.PaitientId,
+                PatientId=req.PatientId,
                 DoctorId=req.DoctorId,
                 StartUtc=startUtc,
                 EndUtc=endUtc,
-                Status=Enums.AppointmentStatus.Scheduled
-                
+                Status=Enums.AppointmentStatus.Scheduled,
+                Notes=req.Notes
             };
             _dbContext.Appointment.Add(ap);
-            _dbContext.SaveChangesAsync();
+            await _dbContext.SaveChangesAsync();
             return ap;
             
         }

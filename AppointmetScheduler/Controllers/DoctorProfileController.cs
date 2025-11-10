@@ -52,13 +52,13 @@ namespace AppointmetScheduler.Controllers
             if(user==null) return NotFound();
             if(doc==null) return NotFound();
 
-            user.PhoneNumber=dto.PhoneNumber;
-            user.Gender=dto.Gender;
-            user.DOB=dto.DOB;
+            if(dto.PhoneNumber!=null) user.PhoneNumber=dto.PhoneNumber;
+            if(dto.Gender!=null) user.Gender=dto.Gender;
+            if(dto.DOB!=null)user.DOB=dto.DOB;
 
-            doc.Specialization = dto.Specilization;
-            doc.Qualifications = dto.Qualifications;
-            doc.Experience=dto.Expirence;
+            if(dto.Specilization!=null) doc.Specialization = dto.Specilization;
+            if(dto.Qualifications!=null) doc.Qualifications = dto.Qualifications;
+            if(dto.Expirence!=null) doc.Experience=dto.Expirence;
             await _context.SaveChangesAsync();
             return Ok();
         }
